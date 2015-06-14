@@ -2,7 +2,7 @@
 
 Name:           xmms
 Version:        1.2.11
-Release:        40%{?dist}
+Release:        41%{?dist}
 Epoch:          1
 Summary:        The X MultiMedia System, a media player
 
@@ -46,6 +46,7 @@ BuildRequires:  libSM-devel
 BuildRequires:  libXxf86vm-devel
 BuildRequires:  desktop-file-utils
 
+Requires:	xmms-libs_%{version}
 Requires:       unzip gtk2 at-spi
 Requires(post): desktop-file-utils >= 0.9
 Requires(postun): desktop-file-utils >= 0.9
@@ -58,25 +59,27 @@ XMMS is a multimedia (Ogg Vorbis, CDs) player for the X Window System
 with an interface similar to Winamp's.  XMMS supports playlists and
 streaming content and has a configurable interface.
 
-%package        libs
+%package        libs_%{version}
 Summary:        XMMS engine and core plugins
 Group:          System Environment/Libraries
+Obsoletes:	libs
 
-%description    libs
+%description    libs_%{version}
 The X MultiMedia System player engine and core plugins.
 
-%package        esd
+%package        esd_%{version}
 Summary:        EsounD output plugin for XMMS
 Group:          System Environment/Libraries
-Requires:       %{name}-libs = %{epoch}:%{version}-%{release}
+Requires:       %{name}-libs_%{version}
+Obsoletes:	esd
 
-%description    esd
+%description    esd_%{version}
 EsounD output plugin for the X MultiMedia System.
 
 %package        devel
 Summary:        Files required for XMMS plug-in development
 Group:          Development/Libraries
-Requires:       %{name}-libs = %{epoch}:%{version}-%{release}
+Requires:       %{name}-libs_%{version}
 Requires:       gtk+-devel
 Requires:       pkgconfig
 
@@ -168,13 +171,13 @@ rm -rf %{buildroot}
 gtk-update-icon-cache -qf %{_datadir}/icons/hicolor &>/dev/null || :
 update-desktop-database -q || :
 
-%post libs -p /sbin/ldconfig
+%post libs_%{version} -p /sbin/ldconfig
 
 %postun
 gtk-update-icon-cache -qf %{_datadir}/icons/hicolor &>/dev/null || :
 update-desktop-database -q || :
 
-%postun libs -p /sbin/ldconfig
+%postun libs_%{version} -p /sbin/ldconfig
 
 
 %files -f %{name}.lang
@@ -189,7 +192,7 @@ update-desktop-database -q || :
 %{_datadir}/xmms/
 %{_mandir}/man1/*xmms.1*
 
-%files libs
+%files libs_%{version}
 %defattr(-,root,root,-)
 %doc COPYING
 %{_libdir}/libxmms.so.*
@@ -203,7 +206,7 @@ update-desktop-database -q || :
 %{_libdir}/xmms/Output/libdisk_writer.so
 %{_libdir}/xmms/Visualization/
 
-%files esd
+%files esd_%{version}
 %defattr(-,root,root,-)
 %{_libdir}/xmms/Output/libesdout.so
 
@@ -217,6 +220,9 @@ update-desktop-database -q || :
 
 
 %changelog
+* Sat Jun 13 2015 Fredrik Fornstad <fredrik.fornstad@gmail.com> - 1:1.2.11-41
+- Introduced new naming and identifying of libs to avoid future upgrade conflicts
+
 * Tue Jun 01 2010 Paulo Roma <roma@lcg.ufrj.br> - 1:1.2.11-40
 - Added --vendor option to desktop-file-utils call for rhel5.
 
